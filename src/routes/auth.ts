@@ -5,6 +5,8 @@ import User from "../models/schemas/user.schema";
 import { celebrate } from "celebrate";
 import { LoginUserSchema, RegisterUserSchema } from "../middleware/Validation";
 import config from "../config/config";
+import passport from "passport";
+import { CompareString, Encrypt } from "../services/encrypt.service";
 
 const router = express.Router();
 type user = { email: string; password: string };
@@ -24,13 +26,11 @@ router.post(
         return res.status(400).json({ msg: "Email already exists" });
       }
 
+      const _password = await Encrypt(password, 10);
       var newUser = new User({
         email: email.toLocaleLowerCase(),
-        password,
+        password: _password,
       });
-
-      const salt = await bcrypt.genSalt(10);
-      newUser.password = await bcrypt.hash(password, salt);
 
       const saveUser = await newUser.save();
       if (!saveUser) {
@@ -74,7 +74,7 @@ router.post(
       }
 
       var _password: string = checkUser.password;
-      const checkPassword = await bcrypt.compare(password, _password);
+      const checkPassword = await CompareString(password, _password);
 
       if (!checkPassword) {
         res.json({ msg: "Invalid email or password" });
@@ -99,6 +99,32 @@ router.post(
       console.error(err.message);
       res.status(500).json({ msg: "server error" });
     }
+  }
+);
+
+router.get(
+  "/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+
+router.get(
+  "/google/redirect",
+  passport.authenticate("google"),
+  (req: Request, res: Response) => {
+    const { _id }: any = req.user;
+    const payload: payload = {
+      user: {
+        id: _id,
+      },
+    };
+    jwt.sign(payload, config.JWT_SECRET, { expiresIn: 3600 }, (err, token) => {
+      if (err) throw err;
+      res.cookie("auth", token);
+      res.writeHead(302, {
+        Location: "http://localhost:3000/login",
+      });
+      res.end();
+    });
   }
 );
 

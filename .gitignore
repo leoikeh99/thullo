@@ -6,3 +6,5 @@ sendgrid.env
 mongodb.yaml
 logs/
 build/
+client/node_modules/
+client/build/

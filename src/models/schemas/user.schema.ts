@@ -12,6 +12,9 @@ var UserSchema = new mongoose.Schema({
   password: {
     type: String,
   },
+  avatar: {
+    type: String,
+  },
 });
 
 const schema = mongoose.model<IUserModel>("Users", UserSchema);
