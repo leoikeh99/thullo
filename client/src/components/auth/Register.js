@@ -16,7 +16,7 @@ import logo from "../../images/Logo.svg";
 import { useState } from "react";
 import { validateAuth } from "../../utils/AuthValidation";
 
-export const Login = () => {
+export const Register = () => {
   const [error, setError] = useState(null);
   const [loginData, setLoginData] = useState({ email: "", password: "" });
 
@@ -60,19 +60,18 @@ export const Login = () => {
               onChange={onChange}
             />
           </InputCover>
-          <Button type="submit">Login</Button>
+          <Button type="submit">Sign Up</Button>
         </form>
         <Text>OR</Text>
         <GoogleButton to="http://localhost:5000/auth/google">
-          <Icon className="fab fa-google" /> Login Using Google
+          <Icon className="fab fa-google" /> Continue with Google
         </GoogleButton>
         <Text>
-          Don’t have an account yet?{" "}
-          <ButtonLink to="/register">Register</ButtonLink>
+          Already have an account ? <ButtonLink to="/login">Login</ButtonLink>
         </Text>
       </AuthCard>
     </AuthContainer>
   );
 };
 
-export default Login;
+export default Register;
