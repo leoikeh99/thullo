@@ -2,6 +2,7 @@ import { errors } from "celebrate";
 import express, { Application } from "express";
 import connectDB from "./config/db";
 import authRoute from "./routes/auth";
+import userRoute from "./routes/user";
 const passportSetup = require("./config/passportSetup");
 import cookieSession from "cookie-session";
 import passport from "passport";
@@ -24,6 +25,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use("/api/auth", authRoute);
+app.use("/api/user", userRoute);
 
 app.use(errors()); //celebrate error handler middleware
 

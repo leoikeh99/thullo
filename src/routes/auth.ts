@@ -9,14 +9,14 @@ import passport from "passport";
 import { CompareString, Encrypt } from "../services/encrypt.service";
 
 const router = express.Router();
-type user = { email: string; password: string };
+type user = { email: string; password: string; username: string };
 type payload = { user: { id: string } };
 
 router.post(
   "/register",
   celebrate(RegisterUserSchema),
   async (req: Request, res: Response): Promise<any> => {
-    const { email, password }: user = req.body;
+    const { email, password, username }: user = req.body;
 
     try {
       const checkEmail = await User.findOne({
@@ -26,10 +26,16 @@ router.post(
         return res.status(400).json({ msg: "Email already exists" });
       }
 
+      const checkUsername = await User.findOne({ username });
+      if (checkUsername) {
+        return res.status(400).json({ msg: "Username already exists" });
+      }
+
       const _password = await Encrypt(password, 10);
       var newUser = new User({
         email: email.toLocaleLowerCase(),
         password: _password,
+        username,
       });
 
       const saveUser = await newUser.save();
@@ -69,15 +75,16 @@ router.post(
       const checkUser: any = await User.findOne({
         email: email.toLocaleLowerCase(),
       });
+
       if (!checkUser) {
-        res.json({ msg: "Invalid email or password" });
+        return res.status(400).json({ msg: "Invalid email or password" });
       }
 
       var _password: string = checkUser.password;
       const checkPassword = await CompareString(password, _password);
 
       if (!checkPassword) {
-        res.json({ msg: "Invalid email or password" });
+        return res.status(400).json({ msg: "Invalid email or password" });
       }
 
       const payload: payload = {
@@ -96,7 +103,7 @@ router.post(
         }
       );
     } catch (err: any) {
-      console.error(err.message);
+      // console.error(err);
       res.status(500).json({ msg: "server error" });
     }
   }

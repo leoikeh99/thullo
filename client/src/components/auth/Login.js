@@ -11,12 +11,21 @@ import {
   GoogleButton,
   ButtonLink,
   ErrorLabel,
+  Alert,
+  Loader,
 } from "../styles/AuthStyles";
 import logo from "../../images/Logo.svg";
 import { useState } from "react";
-import { validateAuth } from "../../utils/AuthValidation";
+import { validateLogin } from "../../utils/AuthValidation";
+import { connect } from "react-redux";
+import { auth, clearError } from "../../actions/authActions";
 
-export const Login = () => {
+export const Login = ({
+  auth,
+  clearError,
+  authState: { token, loader, authError },
+  history,
+}) => {
   const [error, setError] = useState(null);
   const [loginData, setLoginData] = useState({ email: "", password: "" });
 
@@ -27,14 +36,31 @@ export const Login = () => {
 
   const submit = (e) => {
     e.preventDefault();
-    setError(validateAuth(loginData.email, loginData.password));
+    const validate = validateLogin(loginData.email, loginData.password);
+    clearError();
+    setError(validate);
+
+    if (!validate) {
+      auth("login", loginData);
+    }
   };
+
+  useEffect(() => {
+    if (token) {
+      history.push("/");
+    }
+    //eslint-disable-next-line
+  }, [token, history]);
 
   return (
     <AuthContainer>
       <AuthCard>
         <img src={logo} alt="" />
         <Header>Login</Header>
+        <Alert error={authError}>
+          {authError}
+          <i className="fas fa-times" onClick={() => clearError()} />
+        </Alert>
         <form action="" onSubmit={(e) => submit(e)}>
           {error && error.type === "email" && (
             <ErrorLabel>{error.msg}</ErrorLabel>
@@ -60,10 +86,12 @@ export const Login = () => {
               onChange={onChange}
             />
           </InputCover>
-          <Button type="submit">Login</Button>
+          <Button type="submit">
+            <Loader className="fas fa-circle-notch" loader={loader} /> Login
+          </Button>
         </form>
         <Text>OR</Text>
-        <GoogleButton to="http://localhost:5000/auth/google">
+        <GoogleButton href="http://localhost:5000/api/auth/google">
           <Icon className="fab fa-google" /> Login Using Google
         </GoogleButton>
         <Text>
@@ -75,4 +103,6 @@ export const Login = () => {
   );
 };
 
-export default Login;
+const mapStateToProps = (state) => ({ authState: state.auth });
+
+export default connect(mapStateToProps, { auth, clearError })(Login);
