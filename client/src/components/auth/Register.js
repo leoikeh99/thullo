@@ -57,6 +57,7 @@ export const Register = ({
     if (token) {
       history.push("/");
     }
+    document.body.style.background = "#fff";
     //eslint-disable-next-line
   }, [token, history]);
 

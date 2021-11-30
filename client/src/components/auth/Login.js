@@ -49,6 +49,7 @@ export const Login = ({
     if (token) {
       history.push("/");
     }
+    document.body.style.background = "#fff";
     //eslint-disable-next-line
   }, [token, history]);
 

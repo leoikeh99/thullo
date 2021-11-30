@@ -39,3 +39,15 @@ to {
   opacity:1;
 }
 `;
+
+export const popIn = keyframes`
+from {
+  transform:scale(0.5);
+  opacity: 0;
+}
+
+to {
+  transform:scale(1);
+  opacity:1;
+}
+`;

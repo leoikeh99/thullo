@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { genImageUrl, searchImages } from "../../utils/Unsplash";
+import { popIn } from "../styles/animations";
 
 const Cover = styled.div`
   width: 330px;
@@ -8,12 +9,13 @@ const Cover = styled.div`
   background: #fff;
   position: absolute;
   padding: 15px;
-  top: -100px;
-  left: -100px;
+  top: 160px;
+  left: 10px;
   border-radius: 12px;
   border: 1px solid #e0e0e0;
   box-sizing: border-box;
   z-index: 5;
+  animation: ease-in 0.2s ${popIn};
 `;
 
 const Header = styled.h3`
@@ -96,9 +98,10 @@ const Image = styled.img`
   width: 100%;
   border-radius: 6px;
   object-fit: cover;
+  cursor: pointer;
 `;
 
-export const SelectCover = ({ setCover }) => {
+export const SelectCover = ({ setCover, setShowCover }) => {
   const [images, setImages] = useState([]);
   const [text, setText] = useState("");
 
@@ -120,7 +123,11 @@ export const SelectCover = ({ setCover }) => {
 
   return (
     <Cover>
-      <Close>
+      <Close
+        onClick={() => {
+          setShowCover(false);
+          console.log("yes");
+        }}>
         <i className="fas fa-times" />
       </Close>
       <Header>Photo Search</Header>

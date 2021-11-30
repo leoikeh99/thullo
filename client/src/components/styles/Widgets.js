@@ -23,7 +23,6 @@ export const Button2 = styled.button`
   border-radius: 8px;
   border: 0;
   cursor: pointer;
-  position: relative;
 `;
 
 export const EmptyBtn = styled.button`
